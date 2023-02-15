@@ -78,15 +78,15 @@ struct tss_struct {
 struct task_struct {
 /* these are hardcoded - don't touch */
 	long state;	/* -1 unrunnable, 0 runnable, >0 stopped *///任务的运行状态
-	long counter;//任务运行时间计数（递减）（滴答数），运行时间片
+	long counter;//任务运行时间计数
 	long priority;
 	long signal;
 	struct sigaction sigaction[32];
 	long blocked;	/* bitmap of masked signals */
 /* various fields */
 	int exit_code;
-	unsigned long start_code,end_code,end_data,brk,start_stack;//代码段地址，代码长度（字节数），代码长度（字节数）加 数据长度（字节数），总长度（字节数），堆栈段地址
-	long pid,father,pgrp,session,leader;//进程标识号（进程号）
+	unsigned long start_code,end_code,end_data,brk,start_stack;
+	long pid,father,pgrp,session,leader;
 	unsigned short uid,euid,suid;
 	unsigned short gid,egid,sgid;
 	long alarm;

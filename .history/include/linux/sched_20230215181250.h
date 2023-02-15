@@ -86,7 +86,7 @@ struct task_struct {
 /* various fields */
 	int exit_code;
 	unsigned long start_code,end_code,end_data,brk,start_stack;//代码段地址，代码长度（字节数），代码长度（字节数）加 数据长度（字节数），总长度（字节数），堆栈段地址
-	long pid,father,pgrp,session,leader;//进程标识号（进程号）
+	long pid,father,pgrp,session,leader;//进程标识hao
 	unsigned short uid,euid,suid;
 	unsigned short gid,egid,sgid;
 	long alarm;

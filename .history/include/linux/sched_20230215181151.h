@@ -85,8 +85,8 @@ struct task_struct {
 	long blocked;	/* bitmap of masked signals */
 /* various fields */
 	int exit_code;
-	unsigned long start_code,end_code,end_data,brk,start_stack;//代码段地址，代码长度（字节数），代码长度（字节数）加 数据长度（字节数），总长度（字节数），堆栈段地址
-	long pid,father,pgrp,session,leader;//进程标识号（进程号）
+	unsigned long start_code,end_code,end_data,brk,start_stack;//代码段地址，代码字节长度（字节数），代码字节长度（字节数）加数据字节长度（字节数），总字节长度（字节数）
+	long pid,father,pgrp,session,leader;
 	unsigned short uid,euid,suid;
 	unsigned short gid,egid,sgid;
 	long alarm;
