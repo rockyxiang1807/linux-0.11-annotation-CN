@@ -9,18 +9,33 @@ SYSSIZE = 0x3000
 !
 ! bootsect.s is loaded at 0x7c00 by the bios-startup routines, and moves
 ! iself out of the way to address 0x90000, and jumps there.
+/*
+ * bootsect.s 由 bios 启动例程在 0x7c00 加载，并将自己移出地址 0x90000 的方式，并跳转到那里
+ */
 !
 ! It then loads 'setup' directly after itself (0x90200), and the system
 ! at 0x10000, using BIOS interrupts. 
+/*
+ * 然后，它使用BIOS中断直接在自身 (0x90200) 之后加载'setup'，并在 0x10000 处加载系统
+ */
 !
 ! NOTE! currently system is at most 8*65536 bytes long. This should be no
 ! problem, even in the future. I want to keep it simple. This 512 kB
 ! kernel size should be enough, especially as this doesn't contain the
 ! buffer cache as in minix
+/*
+ * 当前系统最多 8*65536 字节长
+ * 这应该没问题，即使在未来 
+ * 我想保持简单。这个 512 kB 的内核大小应该足够了，特别是因为它不像 minix 那样包含缓冲区缓存
+ */
 !
 ! The loader has been made as simple as possible, and continuos
 ! read errors will result in a unbreakable loop. Reboot by hand. It
 ! loads pretty fast by getting whole sectors at a time whenever possible.
+/*
+ * 加载程序已尽可能简单，连续读取错误将导致牢不可破的循环  Reboot by hand.
+ * 通过尽可能一次获取整个扇区，它加载速度非常快
+ */
 
 .globl begtext, begdata, begbss, endtext, enddata, endbss
 .text
@@ -40,6 +55,10 @@ ENDSEG   = SYSSEG + SYSSIZE		! where to stop loading
 
 ! ROOT_DEV:	0x000 - same type of floppy as boot.
 !		0x301 - first partition on first drive etc
+/*
+ * ROOT_DEV: 	0x000 - 与引导相同类型的软盘
+ * 				0x301 - 第一个驱动器上的第一个分区等
+ */
 ROOT_DEV = 0x306
 
 entry start
@@ -58,11 +77,17 @@ go:	mov	ax,cs
 	mov	ds,ax
 	mov	es,ax
 ! put stack at 0x9ff00.
+/*
+ * 将堆栈放置在0x9ff00。
+ */
 	mov	ss,ax
 	mov	sp,#0xFF00		! arbitrary value >>512
 
 ! load the setup-sectors directly after the bootblock.
 ! Note that 'es' is already set up.
+/*
+ * 在引导块之后直接加载安装扇区  注意，'es'已经设置好了
+ */
 
 load_setup:
 	mov	dx,#0x0000		! drive 0, head 0
@@ -79,6 +104,9 @@ load_setup:
 ok_load_setup:
 
 ! Get disk drive parameters, specifically nr of sectors/track
+/*
+ * 获取磁盘驱动器参数，特别是nr的扇区/轨道
+ */
 
 	mov	dl,#0x00
 	mov	ax,#0x0800		! AH=8 is get drive parameters
@@ -90,6 +118,9 @@ ok_load_setup:
 	mov	es,ax
 
 ! Print some inane message
+/*
+ * 打印一些无聊的信息
+ */
 
 	mov	ah,#0x03		! read cursor pos
 	xor	bh,bh
@@ -103,6 +134,10 @@ ok_load_setup:
 
 ! ok, we've written the message, now
 ! we want to load the system (at 0x10000)
+!
+/*
+ * 好的，我们已经写好了消息，现在我们要加载系统(0x10000)
+ */
 
 	mov	ax,#SYSSEG
 	mov	es,ax		! segment of 0x010000
@@ -113,6 +148,11 @@ ok_load_setup:
 ! defined (!= 0), nothing is done and the given device is used.
 ! Otherwise, either /dev/PS0 (2,28) or /dev/at0 (2,8), depending
 ! on the number of sectors that the BIOS reports currently.
+/*
+ * 之后，我们检查要使用哪个根设备
+ * 如果设备被定义为(!= 0)，什么都不做，并使用给定的设备
+ * 否则，要么/dev/PS0(2,28)，要么/dev/at0(2,8)，这取决于BIOS当前报告的扇区数量
+ */
 
 	seg cs
 	mov	ax,root_dev
@@ -132,6 +172,9 @@ root_defined:
 	seg cs
 	mov	root_dev,ax
 
+/*
+ * 在(加载了所有东西)之后，我们跳转到在引导块之后直接加载的 setup-routine
+ */
 ! after that (everyting loaded), we jump to
 ! the setup-routine loaded directly after
 ! the bootblock:
@@ -141,6 +184,10 @@ root_defined:
 ! This routine loads the system at address 0x10000, making sure
 ! no 64kB boundaries are crossed. We try to load it as fast as
 ! possible, loading whole tracks whenever we can.
+/*
+ * 该例程在地址 0x10000 加载系统，确保没有超过 64kB 边界 
+ * 我们会尽可能快地加载，尽可能地加载整条轨道
+ */
 !
 ! in:	es - starting address segment (normally 0x1000)
 !
@@ -229,6 +276,7 @@ bad_rt:	mov ax,#0
  * This procedure turns off the floppy drive motor, so
  * that we enter the kernel in a known state, and
  * don't have to worry about it later.
+ * 这个程序关闭了软驱电机，这样我们就可以在已知状态下进入内核，以后就不用担心了
  */
 kill_motor:
 	push dx

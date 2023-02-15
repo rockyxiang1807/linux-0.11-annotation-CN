@@ -1,5 +1,6 @@
 #
 # Makefile for some libs needed in the kernel.
+# 内核中需要的一些库的 Makefile
 #
 # Note! Dependencies are done automagically by 'make dep', which also
 # removes any old dependencies. DON'T put your own dependencies here

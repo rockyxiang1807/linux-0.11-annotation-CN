@@ -1,6 +1,7 @@
 #
 # if you want the ram-disk device, define this to be the
 # size in blocks.
+# 如果您想要 ram 磁盘设备，请将其定义为块大小
 #
 RAMDISK = #-DRAMDISK=512
 
@@ -17,8 +18,10 @@ CPP	=cpp -nostdinc -Iinclude
 
 #
 # ROOT_DEV specifies the default root-device when making the image.
+# ROOT_DEV 指定制作镜像时的默认根设备
 # This can be either FLOPPY, /dev/xxxx or empty, in which case the
 # default of /dev/hd6 is used by 'build'.
+# 这可以是 FLOPPY、/dev/xxxx 或空的，在这种情况下，'build' 使用默认的 /dev/hd6
 #
 ROOT_DEV=/dev/hd6
 

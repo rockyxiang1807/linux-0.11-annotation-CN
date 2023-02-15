@@ -4,6 +4,8 @@
 # Note! Dependencies are done automagically by 'make dep', which also
 # removes any old dependencies. DON'T put your own dependencies here
 # unless it's something special (ie not a .c file).
+# 依赖关系由“make dep”自动完成，这也会删除任何旧的依赖关系
+# 不要将您自己的依赖项放在这里，除非它是特殊的东西（即不是 .c 文件）
 #
 
 AR	=gar
