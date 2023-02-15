@@ -94,10 +94,18 @@ static void tell_father(int pid)
 			return;
 		}
 /* if we don't find any fathers, we just release ourselves */
+/* 如果我们找不到任何父进程，我们就释放自己 */
 /* This is not really OK. Must change it to make father 1 */
+/* This is not really OK. 必须改变它才能成为父进程 1*/
 	printk("BAD BAD - no father found\n\r");
 	release(current);
 }
+
+/*
+ * 该函数会首先释放进程代码段和数据段占用的内存页面，关闭进程打开着的所有文件，对进程使用的当前工作目录、根目录和运行程序的 i 节点进行同步操作
+ * 如果进程有子进程，则让 init 进程作为其所有子进程的父进程。如果进程是一个会话头进程并且有控制终端，则释放控制终端，并向属于该会话的所有进程发送挂断信号 SIGHUP 这通常会终止该会话中的所有进程
+ * 然后把进程状态置为僵死状态 TASK_ZOMBIE。并向其原父进程发送 SIGCHLD 信号，通知其某个子进程已经终止。最后 do_exit()调用调度函数去执行其它进程
+ */
 
 int do_exit(long code)
 {

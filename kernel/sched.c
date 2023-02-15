@@ -9,6 +9,8 @@
  * (sleep_on, wakeup, schedule etc) as well as a number of simple system
  * call functions (type getpid(), which just extracts a field from
  * current-task
+ * 'sched.c' 是主要的内核文件
+ * 它包含调度原语（sleep_on、wakeup、schedule 等）以及一些简单的系统调用函数（类型 getpid()，它只是从当前任务中提取一个字段
  */
 #include <linux/sched.h>
 #include <linux/kernel.h>
@@ -95,11 +97,27 @@ void math_state_restore()
  *  'schedule()' is the scheduler function. This is GOOD CODE! There
  * probably won't be any reason to change this, as it should work well
  * in all circumstances (ie gives IO-bound processes good response etc).
+ * 'schedule()' 是调度程序函数。 这是很好的代码！ 可能没有任何理由改变它，因为它应该在所有情况下都能很好地工作（即给 IO 绑定进程良好的响应等）
+ * 
  * The one thing you might take a look at is the signal-handler code here.
+ * 您可能要看的一件事是此处的信号处理程序代码
  *
  *   NOTE!!  Task 0 is the 'idle' task, which gets called when no other
  * tasks can run. It can not be killed, and it cannot sleep. The 'state'
  * information in task[0] is never used.
+ * 任务 0 是“空闲”任务，当没有其他任务可以运行时会调用它。 杀不死，睡不着。 task[0] 中的“状态”信息从不使用
+ */
+
+/*
+ * schedule()函数首先扫描任务数组。通过比较每个就绪态（TASK_RUNNING）任务的运行时间递减滴答计数 counter 的值来确定当前哪个进程运行的时间最少
+ * 哪一个的值大，就表示运行时间还不长，于是就选中该进程，并使用任务切换宏函数切换到该进程运行
+ *
+ * 如果此时所有处于 TASK_RUNNING 状态进程的时间片都已经用完，系统就会根据每个进程的优先权值 priority，对系统中所有进程（包括正在睡眠的进程）重新计算每个任务需要运行的时间片值 counter
+ * 然后 schdeule()函数重新扫描任务数组中所有处于 TASK_RUNNING 状态，重复上述过程，直到选择出一个进程为止
+ * 最后调用 switch_to()执行实际的进程切换操作。
+ * 如果此时没有其它进程可运行，系统就会选择进程0运行。对于Linux 0.11来说，进程0会调用pause()把自己置为可中断的睡眠状态并再次调用 schedule()
+ * 不过在调度进程运行时，schedule()并不在意进程 0 处于什么状态。只要系统空闲就调度进程 0 运行
+ *
  */
 void schedule(void)
 {
@@ -107,6 +125,7 @@ void schedule(void)
 	struct task_struct ** p;
 
 /* check alarm, wake up any interruptible tasks that have got a signal */
+/* 检查警报，唤醒任何有信号的可中断任务 */
 
 	for(p = &LAST_TASK ; p > &FIRST_TASK ; --p)
 		if (*p) {
@@ -120,6 +139,7 @@ void schedule(void)
 		}
 
 /* this is the scheduler proper: */
+/* 这是恰当的调度程序 */
 
 	while (1) {
 		c = -1;
@@ -197,6 +217,8 @@ void wake_up(struct task_struct **p)
  * OK, here are some floppy things that shouldn't be in the kernel
  * proper. They are here because the floppy needs a timer, and this
  * was the easiest way of doing it.
+ * 这里有一些不应该在内核中的软盘东西
+ * 他们在这里是因为软盘需要一个定时器，而这是最简单的方法
  */
 static struct task_struct * wait_motor[4] = {NULL,NULL,NULL,NULL};
 static int  mon_timer[4]={0,0,0,0};
@@ -400,6 +422,7 @@ void sched_init(void)
 		p++;
 	}
 /* Clear NT, so that we won't have troubles with that later on */
+/* 清除 NT，这样我们以后就不会遇到麻烦 */
 	__asm__("pushfl ; andl $0xffffbfff,(%esp) ; popfl");
 	ltr(0);
 	lldt(0);

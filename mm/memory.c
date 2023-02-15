@@ -40,6 +40,7 @@ static inline volatile void oom(void)
 __asm__("movl %%eax,%%cr3"::"a" (0))
 
 /* these are not to be changed without changing head.s etc */
+/* 如果不改变 head.s 等，就不能改变这些 */
 #define LOW_MEM 0x100000
 #define PAGING_MEMORY (15*1024*1024)
 #define PAGING_PAGES (PAGING_MEMORY>>12)
@@ -59,6 +60,8 @@ static unsigned char mem_map [ PAGING_PAGES ] = {0,};
 /*
  * Get physical address of first (actually last :-) free page, and mark it
  * used. If no free pages left, return 0.
+ * 获取第一个（实际上是最后一个 :-) 空闲页面的物理地址，并将其标记为已使用
+ * 如果没有剩余可用页面，则返回 0
  */
 unsigned long get_free_page(void)
 {
@@ -101,6 +104,7 @@ void free_page(unsigned long addr)
 /*
  * This function frees a continuos block of page tables, as needed
  * by 'exit()'. As does copy_page_tables(), this handles only 4Mb blocks.
+ * 此函数根据“exit()”的需要释放连续的页表块。 与 copy_page_tables() 一样，它只处理 4Mb 块
  */
 int free_page_tables(unsigned long from,unsigned long size)
 {
